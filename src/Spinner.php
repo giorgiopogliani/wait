@@ -4,14 +4,16 @@ namespace Performing\Wait;
 
 class Spinner
 {
-    protected $frames = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"];
+    protected $frames;
 
     protected $fork;
 
     protected $running = false;
 
-    public function __construct()
+    public function __construct($frames = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"])
     {
+        $this->frames = $frames;
+
         $this->fork = Fork::create();
     }
 
@@ -22,10 +24,14 @@ class Spinner
 
     public function update($message)
     {
+        if ($this->running) {
+            $this->stop();
+            $this->cleanup();
+        }
+
         $this->message = $message;
 
         if ($this->running) {
-            $this->done();
             $this->start();
         }
     }
@@ -33,18 +39,12 @@ class Spinner
     protected function start()
     {
         $this->fork->process([$this->message, $this->frames], function ($message, $frames) {
-            $handle = fopen('php://output', 'w');
-
-            fwrite($handle, "\u{001B}[?25l");
-
             while (true) {
-                usleep(1000000 / 30);
+                usleep(1000000 / 24);
 
-                fflush($handle);
+                echo "\r".(str_repeat(' ', strlen($message)));
 
-                fwrite($handle, "\r");
-
-                fwrite($handle,  current($frames) . ' ' . $message);
+                echo "\r".(current($frames) . ' ' . $message);
 
                 next($frames);
 
@@ -52,38 +52,45 @@ class Spinner
                     reset($frames);
                 }
             }
-
-            fclose('php//output');
         });
     }
 
     public function task($callable)
     {
+        // set running
         $this->running = true;
 
+        // start the spinner inside the fork
         $this->start();
 
-        $callable();
+        // run the task
+        $data = $callable();
 
+        // stop the spinner
+        $this->stop();
+
+        // set not running
         $this->running = false;
 
-        $this->done();
+        // set complete message
+        $this->complete();
 
-        return $this;
+        // return data
+        return $data;
     }
 
-    protected function done()
+    public function cleanup()
+    {
+        echo "\r" . str_repeat(' ', mb_strlen($this->message) + 16);
+    }
+
+    protected function complete()
+    {
+        echo "\r" . "✓ $this->message" . PHP_EOL;
+    }
+
+    protected function stop()
     {
         $this->fork->terminate();
-
-        $handle = fopen('php://output', 'w');
-
-        fflush($handle);
-
-        fwrite($handle, "\r");
-
-        fwrite($handle, "✓ $this->message");
-
-        fclose($handle);
     }
 }

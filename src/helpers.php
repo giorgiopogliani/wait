@@ -9,8 +9,8 @@ if (! function_exists('wait')) {
 
         $spinner->update($message);
 
-        $spinner->task(function () use ($closure, $spinner) {
-            call_user_func($closure, $spinner);
+        return $spinner->task(function () use ($closure, $spinner) {
+            return call_user_func($closure, $spinner);
         });
     }
 }
