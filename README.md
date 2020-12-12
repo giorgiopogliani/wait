@@ -10,7 +10,7 @@ wait('Wait...', function(){
 ```
 Or as object
 ```php
-$spinner = Spinner::create();
+$spinner = \Performing\Wait\Spinner::create();
 
 $spinner->update('Wait..');
 
@@ -19,6 +19,12 @@ $spinner->start();
 sleep(3); // slow code
 
 $spinner->stop();
+```
+
+## Install
+
+```
+composer require performing/wait
 ```
 
 ## License
