@@ -15,8 +15,7 @@ abstract class SpinnerType implements Iterator
 
     public function next()
     {
-        if (!current($this->frames)) {
-
+        if (! current($this->frames)) {
             reset($this->frames);
 
             next($this->frames);
