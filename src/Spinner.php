@@ -53,10 +53,10 @@ class Spinner
     protected function run()
     {
         $this->fork->process([$this->message, $this->type], function ($message, $type) {
-            foreach(new $type as $frame) {
-                if (!empty($frame)) {
+            foreach (new $type as $frame) {
+                if (! empty($frame)) {
                     usleep(1000000 / 24);
-                    echo (str_repeat(' ', strlen($message)) . "\r");
+                    echo(str_repeat(' ', strlen($message)) . "\r");
                     echo "\r$frame $message";
                 }
             }
