@@ -17,6 +17,7 @@ abstract class SpinnerType implements Iterator
     {
         if (! current($this->frames)) {
             reset($this->frames);
+
             return;
         }
 
