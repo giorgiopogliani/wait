@@ -9,8 +9,23 @@ if (! function_exists('wait')) {
 
         $spinner->update($message);
 
-        return $spinner->task(function () use ($closure, $spinner) {
-            return call_user_func($closure, $spinner);
-        });
+        $spinner->start();
+
+        $data = call_user_func($closure, $spinner);
+
+        $spinner->stop();
+
+        return $data;
+    }
+}
+
+if (! function_exists('spinner')) {
+    function spinner()
+    {
+        static $spinner;
+
+        $spinner ??= Spinner::create();
+
+        return $spinner;
     }
 }

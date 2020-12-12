@@ -4,16 +4,17 @@ namespace Performing\Wait;
 
 class Spinner
 {
-    protected $frames;
+    protected $type;
 
     protected $fork;
 
     protected $running = false;
 
-    public function __construct($frames = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"])
-    {
-        $this->frames = $frames;
+    protected $message = '';
 
+    public function __construct($type = Dots::class)
+    {
+        $this->type = $type;
         $this->fork = Fork::create();
     }
 
@@ -25,61 +26,44 @@ class Spinner
     public function update($message)
     {
         if ($this->running) {
-            $this->stop();
+            $this->terminate();
             $this->cleanup();
         }
 
         $this->message = $message;
 
         if ($this->running) {
-            $this->start();
+            $this->run();
         }
     }
 
-    protected function start()
+    public function start()
     {
-        $this->fork->process([$this->message, $this->frames], function ($message, $frames) {
-            while (true) {
-                usleep(1000000 / 24);
+        $this->running = true;
+        $this->run();
+    }
 
-                echo "\r".(str_repeat(' ', strlen($message)));
+    public function stop()
+    {
+        $this->terminate();
+        $this->running = false;
+        $this->complete();
+    }
 
-                echo "\r".(current($frames) . ' ' . $message);
-
-                next($frames);
-
-                if (! current($frames)) {
-                    reset($frames);
+    protected function run()
+    {
+        $this->fork->process([$this->message, $this->type], function ($message, $type) {
+            foreach(new $type as $frame) {
+                if (!empty($frame)) {
+                    usleep(1000000 / 24);
+                    echo (str_repeat(' ', strlen($message)) . "\r");
+                    echo "\r$frame $message";
                 }
             }
         });
     }
 
-    public function task($callable)
-    {
-        // set running
-        $this->running = true;
-
-        // start the spinner inside the fork
-        $this->start();
-
-        // run the task
-        $data = $callable();
-
-        // stop the spinner
-        $this->stop();
-
-        // set not running
-        $this->running = false;
-
-        // set complete message
-        $this->complete();
-
-        // return data
-        return $data;
-    }
-
-    public function cleanup()
+    protected function cleanup()
     {
         echo "\r" . str_repeat(' ', mb_strlen($this->message) + 16);
     }
@@ -89,7 +73,7 @@ class Spinner
         echo "\r" . "✓ $this->message" . PHP_EOL;
     }
 
-    protected function stop()
+    protected function terminate()
     {
         $this->fork->terminate();
     }
