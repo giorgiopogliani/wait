@@ -48,7 +48,9 @@ class Spinner
 
                 next($frames);
 
-                if (!current($frames)) reset($frames);
+                if (! current($frames)) {
+                    reset($frames);
+                }
             }
 
             fclose('php//output');
