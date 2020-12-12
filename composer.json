@@ -1,0 +1,61 @@
+{
+    "name": "performing/wait",
+    "description": "simple cli spinner",
+    "keywords": [
+        "performing",
+        "wait"
+    ],
+    "homepage": "https://github.com/performing/wait",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Giorgio Pogliani",
+            "email": "giorgio.pogliani@performingdigital.com",
+            "homepage": "https://spatie.be",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": "^7.4|^8.0"
+    },
+    "require-dev": {
+        "friendsofphp/php-cs-fixer": "^2.16",
+        "phpunit/phpunit": "^9.3",
+        "symfony/var-dumper": "^5.2",
+        "vimeo/psalm": "^3.11"
+    },
+    "autoload": {
+        "psr-4": {
+            "Performing\\Wait\\": "src"
+        },
+        "files": [
+            "src/helpers.php"
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Performing\\Wait\\Tests\\": "tests"
+        }
+    },
+    "scripts": {
+        "psalm": "vendor/bin/psalm",
+        "test": "vendor/bin/phpunit",
+        "test-coverage": "vendor/bin/phpunit --coverage-html coverage",
+        "format": "vendor/bin/php-cs-fixer fix --allow-risky=yes"
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "funding": [
+        {
+            "type": "github",
+            "url": "https://github.com/sponsors/spatie"
+        },
+        {
+            "type": "other",
+            "url": "https://spatie.be/open-source/support-us"
+        }
+    ]
+}
